@@ -3,17 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mustang</title>
+  <title>Shelby GT500 — American Legend</title>
+  <meta name="description" content="The Shelby GT500. 760 supercharged horsepower. Born on the track, bred for the street." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div id="stage">
-    <canvas id="sequence"></canvas>
-    <div id="loader">
+  <!-- Preloader -->
+  <div id="loader">
+    <div class="loader-inner">
+      <div class="loader-word">SHELBY</div>
       <div class="bar"><span id="bar-fill"></span></div>
+      <div class="loader-pct"><span id="bar-pct">0</span>%</div>
     </div>
   </div>
+
+  <!-- Fixed navigation -->
+  <header id="nav">
+    <a href="#hero" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">SHELBY</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#legend">Legend</a>
+      <a href="#specs">Performance</a>
+      <a href="#heritage">Heritage</a>
+    </nav>
+    <a href="#build" class="nav-cta">Build Yours</a>
+  </header>
+
+  <!-- HERO — pinned canvas sequence with 3D parallax layers -->
+  <section id="hero">
+    <canvas id="sequence"></canvas>
+    <div class="hero-vignette"></div>
+    <div class="hero-grain"></div>
+
+    <div class="hero-parallax">
+      <div class="layer watermark" data-depth="-260">SHELBY</div>
+
+      <div class="layer hero-intro" id="hero-intro" data-depth="60">
+        <div class="eyebrow"><span class="line-mask"><span class="line">Shelby American · Est. 1962</span></span></div>
+        <h1 class="title">
+          <span class="line-mask"><span class="line">GT<span class="accent">500</span></span></span>
+        </h1>
+        <p class="subtitle"><span class="line-mask"><span class="line">The most powerful street-legal Ford ever built.</span></span></p>
+      </div>
+
+      <!-- Cinematic captions synced to the car animation -->
+      <div class="layer cap" data-cap="1" data-depth="140">
+        <span class="cap-value">760</span>
+        <span class="cap-tag">Horsepower</span>
+      </div>
+      <div class="layer cap" data-cap="2" data-depth="140">
+        <span class="cap-value">3.3<em>s</em></span>
+        <span class="cap-tag">0 – 60 mph</span>
+      </div>
+      <div class="layer cap" data-cap="3" data-depth="140">
+        <span class="cap-value">5.2<em>L</em></span>
+        <span class="cap-tag">Supercharged V8</span>
+      </div>
+      <div class="layer cap" data-cap="4" data-depth="140">
+        <span class="cap-value">Unleash</span>
+        <span class="cap-tag">the legend</span>
+      </div>
+    </div>
+
+    <div class="hero-hud">
+      <span class="hud hud-tl">SHELBY&nbsp;/&nbsp;GT500</span>
+      <span class="hud hud-tr">CARBON FIBER TRACK PACK</span>
+    </div>
+
+    <div class="scroll-cue" id="scroll-cue">
+      <span>Scroll</span>
+      <span class="scroll-line"></span>
+    </div>
+  </section>
+
+  <!-- LEGEND / statement -->
+  <section id="legend" class="section statement">
+    <div class="stripes" data-parallax="-14" aria-hidden="true"></div>
+    <h2 class="statement-text" data-reveal>
+      Born on the <span class="accent">track</span>.<br />Bred for the <span class="accent">street</span>.
+    </h2>
+    <p class="statement-sub" data-reveal>
+      Half a century of racing pedigree, distilled into one uncompromising machine.
+      Every curve earned at speed. Every number a promise.
+    </p>
+  </section>
+
+  <!-- SPECS — 3D tilt cards -->
+  <section id="specs" class="section specs">
+    <div class="section-head">
+      <span class="kicker" data-reveal>The Numbers</span>
+      <h2 data-reveal>Engineered to dominate</h2>
+    </div>
+    <div class="spec-grid">
+      <article class="spec-card tilt" data-reveal>
+        <span class="spec-index">01</span>
+        <div class="spec-value">760<span class="spec-unit">hp</span></div>
+        <div class="spec-label">Supercharged Output</div>
+        <p>A hand-assembled 5.2L V8 crowned with a 2.65L roots-type supercharger.</p>
+      </article>
+      <article class="spec-card tilt" data-reveal>
+        <span class="spec-index">02</span>
+        <div class="spec-value">625<span class="spec-unit">lb-ft</span></div>
+        <div class="spec-label">Peak Torque</div>
+        <p>Relentless thrust delivered through a 7-speed dual-clutch transmission.</p>
+      </article>
+      <article class="spec-card tilt" data-reveal>
+        <span class="spec-index">03</span>
+        <div class="spec-value">3.3<span class="spec-unit">sec</span></div>
+        <div class="spec-label">0 – 60 mph</div>
+        <p>Launch control and sticky rubber turn raw power into instant motion.</p>
+      </article>
+      <article class="spec-card tilt" data-reveal>
+        <span class="spec-index">04</span>
+        <div class="spec-value">180<span class="spec-unit">mph</span></div>
+        <div class="spec-label">Top Speed</div>
+        <p>Track-tuned aero and a carbon fiber wing keep it planted at the limit.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- HERITAGE -->
+  <section id="heritage" class="section heritage">
+    <div class="heritage-grid">
+      <div class="heritage-copy">
+        <span class="kicker" data-reveal>Since 1962</span>
+        <h2 data-reveal>A name written in <span class="accent">horsepower</span></h2>
+        <p data-reveal>
+          Carroll Shelby didn't build cars to blend in. He built them to win — at Le Mans,
+          at Daytona, and on every road since. The GT500 carries that defiance forward,
+          fusing brute force with the precision of a modern track weapon.
+        </p>
+        <p data-reveal>
+          This is not transportation. It is intent, cast in steel and carbon.
+        </p>
+      </div>
+      <div class="heritage-figures">
+        <div class="fig" data-parallax="-10" data-reveal>
+          <span class="fig-num">60<em>+</em></span>
+          <span class="fig-cap">Years of racing legacy</span>
+        </div>
+        <div class="fig" data-parallax="10" data-reveal>
+          <span class="fig-num">1</span>
+          <span class="fig-cap">Uncompromising vision</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="build" class="section cta">
+    <div class="stripes stripes-center" data-parallax="16" aria-hidden="true"></div>
+    <h2 data-reveal>Your legend<br />awaits.</h2>
+    <a href="#hero" class="cta-btn" data-reveal>Build Yours <span>→</span></a>
+  </section>
+
+  <footer id="footer">
+    <div class="footer-brand">SHELBY<span class="accent">.</span></div>
+    <p>An enthusiast tribute build. Not affiliated with Ford Motor Company or Carroll Shelby Licensing.</p>
+  </footer>
 
   <!-- GSAP + ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
