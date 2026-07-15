@@ -560,6 +560,38 @@ h2 {
   font-size: 0.8rem;
   max-width: 520px;
 }
+.footer-vbuild {
+  margin-top: 26px;
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+  width: min(100%, 620px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.vbuild-mark {
+  font-family: "Anton", sans-serif;
+  letter-spacing: 0.24em;
+  font-size: 1.15rem;
+  padding-left: 0.24em;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.vbuild-mark sup {
+  font-size: 0.42em;
+  -webkit-text-fill-color: var(--accent-2);
+  vertical-align: super;
+}
+.footer-credit {
+  font-family: "Barlow Condensed", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: #6a7178;
+}
 
 /* --------------------------------------------------------------- Responsive */
 @media (max-width: 900px) {
