@@ -1,4 +1,7 @@
 gsap.registerPlugin(ScrollTrigger);
+// Ignore mobile viewport resizes caused by the address bar showing/hiding,
+// which would otherwise refresh + jump the pinned hero mid-scroll.
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 /* ===========================================================================
  * 1. CANVAS FRAME SEQUENCE
@@ -32,8 +35,12 @@ let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
 function resizeCanvas() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = Math.floor(window.innerWidth * dpr);
-  canvas.height = Math.floor(window.innerHeight * dpr);
+  // Size the drawing buffer to the canvas's actual rendered box (driven by
+  // the hero's 100dvh), not window.innerHeight — keeps it correct on mobile.
+  const w = canvas.clientWidth || window.innerWidth;
+  const h = canvas.clientHeight || window.innerHeight;
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
   render(state.frame);
@@ -78,8 +85,11 @@ function preload() {
 /* ===========================================================================
  * 2. SMOOTH SCROLL (Lenis -> GSAP ticker -> ScrollTrigger)
  * ========================================================================= */
+let lenis = null;
 function initSmoothScroll() {
-  const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+  // smoothTouch left off: native touch scrolling feels better and avoids
+  // fighting the pinned hero on phones/tablets.
+  lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -100,7 +110,14 @@ function initSmoothScroll() {
 /* ===========================================================================
  * 3. PINNED HERO TIMELINE — frame scrub + cinematic captions
  * ========================================================================= */
-const PER_FRAME = 9; // px of scroll per frame
+// Scroll distance per frame — shorter on smaller screens so getting through
+// the 467-frame sequence isn't an endless swipe on a phone.
+function perFrame() {
+  const w = window.innerWidth;
+  if (w <= 600) return 5;
+  if (w <= 1024) return 7;
+  return 9;
+}
 
 function initHeroTimeline() {
   const tl = gsap.timeline({
@@ -108,7 +125,8 @@ function initHeroTimeline() {
     scrollTrigger: {
       trigger: "#hero",
       start: "top top",
-      end: "+=" + FRAME_COUNT * PER_FRAME,
+      // functional end so it recomputes per breakpoint on refresh
+      end: () => "+=" + FRAME_COUNT * perFrame(),
       pin: true,
       pinSpacing: true,
       anticipatePin: 1,
@@ -239,11 +257,34 @@ function initTiltCards() {
  * ========================================================================= */
 function initNav() {
   const nav = document.getElementById("nav");
+  const toggle = document.getElementById("nav-toggle");
+  const links = document.getElementById("nav-links");
+
   ScrollTrigger.create({
     start: 0,
     end: "max",
     onUpdate: (self) => nav.classList.toggle("scrolled", self.scroll() > 40),
   });
+
+  // Mobile / tablet hamburger menu
+  if (toggle && links) {
+    const setOpen = (open) => {
+      nav.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      if (lenis) open ? lenis.stop() : lenis.start(); // lock scroll while open
+    };
+    toggle.addEventListener("click", () =>
+      setOpen(!nav.classList.contains("open"))
+    );
+    // Close after tapping a link
+    links.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => setOpen(false))
+    );
+    // Close if resized up to desktop while open
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 900 && nav.classList.contains("open")) setOpen(false);
+    });
+  }
 }
 
 /* ===========================================================================
@@ -257,10 +298,16 @@ async function main() {
 
   initSmoothScroll();
   initHeroTimeline();
-  initMouseParallax();
   initContentMotion();
-  initTiltCards();
   initNav();
+
+  // Cursor-driven effects only on real pointer devices — on touch these
+  // misfire during drags and there is no hover state.
+  const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (canHover) {
+    initMouseParallax();
+    initTiltCards();
+  }
 
   // Intro headline entrance (one-shot, independent of scroll scrub targets)
   gsap.from("#hero-intro .line", {
@@ -275,9 +322,26 @@ async function main() {
   ScrollTrigger.refresh();
 }
 
+// Only react to WIDTH changes (real layout/orientation changes). Mobile
+// browsers fire resize on every address-bar toggle with a height-only delta,
+// which we deliberately ignore to keep the pinned hero from jumping.
+let lastW = window.innerWidth;
+let resizeTimer;
 window.addEventListener("resize", () => {
-  resizeCanvas();
-  ScrollTrigger.refresh();
+  if (window.innerWidth === lastW) return;
+  lastW = window.innerWidth;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    resizeCanvas();
+    ScrollTrigger.refresh();
+  }, 200);
+});
+
+window.addEventListener("orientationchange", () => {
+  setTimeout(() => {
+    resizeCanvas();
+    ScrollTrigger.refresh();
+  }, 300);
 });
 
 main();

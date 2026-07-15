@@ -18,6 +18,9 @@
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Stop iOS/Android from auto-inflating text in landscape */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -27,6 +30,7 @@ body {
   /* clip (not hidden) so ScrollTrigger pinning keeps working */
   overflow-x: clip;
   line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .accent {
@@ -170,7 +174,8 @@ body {
 /* -------------------------------------------------------------------- Hero */
 #hero {
   position: relative;
-  height: 100vh;
+  height: 100vh; /* fallback */
+  height: 100dvh; /* fills screen even as the mobile address bar shows/hides */
   width: 100%;
   overflow: hidden;
   background: #000;
@@ -418,6 +423,7 @@ h2 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 22px;
+  perspective: 1200px;
 }
 .spec-card {
   position: relative;
@@ -593,18 +599,88 @@ h2 {
   color: #6a7178;
 }
 
-/* --------------------------------------------------------------- Responsive */
-@media (max-width: 900px) {
-  .nav-links { display: none; }
-  .spec-grid { grid-template-columns: repeat(2, 1fr); }
-  .heritage-grid { grid-template-columns: 1fr; gap: 44px; }
+/* Hamburger button (hidden on desktop) */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  z-index: 70;
 }
-@media (max-width: 560px) {
-  .spec-grid { grid-template-columns: 1fr; }
+.nav-toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* --------------------------------------------------------------- Responsive */
+
+/* Tablet — two-up grids, tighter rhythm */
+@media (max-width: 1024px) {
+  .spec-grid { grid-template-columns: repeat(2, 1fr); }
+  .heritage-grid { grid-template-columns: 1fr; gap: 48px; }
+  .section-head { margin-bottom: 44px; }
+  .hud-tl, .hud-tr { top: 92px; }
+}
+
+/* Tablet + mobile — slide-in hamburger menu */
+@media (max-width: 900px) {
+  #nav { padding: 18px clamp(20px, 4vw, 40px); }
+  .nav-toggle { display: flex; }
+  .nav-links {
+    position: fixed;
+    inset: 0 0 0 auto;
+    height: 100vh;
+    height: 100dvh;
+    width: min(82vw, 340px);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+    padding: 40px clamp(28px, 8vw, 48px);
+    background: rgba(6, 8, 10, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  #nav.open .nav-links { transform: translateX(0); }
+  .nav-links a { font-size: 1.4rem; color: var(--ink); }
+  .nav-cta {
+    margin-top: 10px;
+    padding: 14px 28px;
+    font-size: 1rem;
+  }
+  #nav.open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  #nav.open .nav-toggle span:nth-child(2) { opacity: 0; }
+  #nav.open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+}
+
+/* Mobile — single column, tighter spacing */
+@media (max-width: 640px) {
+  #nav { padding: 15px 20px; }
+  .spec-grid { grid-template-columns: 1fr; gap: 16px; }
+  .spec-card { padding: 28px 24px 26px; }
   .hud { display: none; }
+  .section { padding: clamp(72px, 12vh, 120px) 22px; }
+  .heritage-figures { flex-direction: row; flex-wrap: wrap; gap: 24px 30px; }
+  .fig { flex: 1 1 40%; }
+  .cta-btn { padding: 16px 34px; }
+  .footer-credit { font-size: 0.66rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-line { animation: none; }
   .loader-word { animation: none; }
+  .nav-links { transition: none; }
 }
