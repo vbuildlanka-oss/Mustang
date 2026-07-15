@@ -8,19 +8,14 @@ html,
 body {
   background: #000;
   color: #fff;
-  overflow-x: hidden;
+  /* Use `clip` instead of `hidden`: `overflow-x: hidden` turns <body> into a
+     scroll container, which breaks ScrollTrigger pinning. `clip` does not. */
+  overflow-x: clip;
 }
 
-/* Tall track that provides the scroll distance */
-#scroll-track {
-  position: relative;
-  width: 100%;
-}
-
-/* Sticky stage that stays pinned while the sequence plays */
+/* Stage is pinned by GSAP ScrollTrigger while the sequence plays */
 #stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100vh;
   width: 100%;
   overflow: hidden;
