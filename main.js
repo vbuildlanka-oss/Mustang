@@ -5,24 +5,39 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 
 /* ===========================================================================
  * 1. CANVAS FRAME SEQUENCE
- * Frames stream from ImageKit (CDN) at full original quality — no image
- * files are stored in the repo.
- *   Scene 1: /S1 -> 001..300 (300 frames)
- *   Scene 2: /S2 -> 001..100 (100 frames)
- * One continuous 400-frame sequence of the Shelby.
+ * Frames stream from ImageKit CDN with on-the-fly WebP conversion for speed.
+ * Responsive quality tiers keep desktop crisp and mobile fast:
+ *   Desktop (>1024px): full 1920px, WebP quality 90
+ *   Tablet  (641–1024): 1280px, WebP quality 85
+ *   Mobile  (<=640):    960px, WebP quality 82
+ *
+ *   Scene 1: /PROS1 -> 001..300 (300 frames, .png source)
+ *   Scene 2: /PROS2 -> 001..100 (100 frames, .png source)
+ * One continuous 400-frame sequence.
  * ========================================================================= */
 const IK_BASE = "https://ik.imagekit.io/6vh7g9jwp";
 const SCENES = [
-  { path: "S1", count: 300 },
-  { path: "S2", count: 100 },
+  { path: "PROS1", count: 300 },
+  { path: "PROS2", count: 100 },
 ];
 const pad = (n) => String(n).padStart(3, "0");
+
+// Pick the right ImageKit transform based on viewport width at boot time.
+// This is evaluated once so all frames use a consistent resolution.
+function pickTransform() {
+  const w = window.innerWidth;
+  const d = window.devicePixelRatio || 1;
+  // On Retina mobile, still cap at 1280 to avoid blowing through bandwidth.
+  if (w <= 640) return "tr:w-960,f-webp,q-82";
+  if (w <= 1024 || (w <= 1366 && d < 2)) return "tr:w-1280,f-webp,q-85";
+  return "tr:f-webp,q-90"; // full 1920px
+}
+const IK_TR = pickTransform();
 
 const frameSrcs = [];
 for (const scene of SCENES) {
   for (let i = 1; i <= scene.count; i++) {
-    // Original asset — no quality/size transforms, so quality is untouched.
-    frameSrcs.push(`${IK_BASE}/${scene.path}/ezgif-frame-${pad(i)}.jpg`);
+    frameSrcs.push(`${IK_BASE}/${IK_TR}/${scene.path}/ezgif-frame-${pad(i)}.png`);
   }
 }
 const FRAME_COUNT = frameSrcs.length;
