@@ -5,19 +5,24 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 
 /* ===========================================================================
  * 1. CANVAS FRAME SEQUENCE
- * Scene 1: Set1 -> 001..300 (300)  |  Scene 2: Set2 -> 001..167 (167)
- * One continuous 467-frame sequence of the Shelby.
+ * Frames stream from ImageKit (CDN) at full original quality — no image
+ * files are stored in the repo.
+ *   Scene 1: /S1 -> 001..300 (300 frames)
+ *   Scene 2: /S2 -> 001..100 (100 frames)
+ * One continuous 400-frame sequence of the Shelby.
  * ========================================================================= */
+const IK_BASE = "https://ik.imagekit.io/6vh7g9jwp";
 const SCENES = [
-  { dir: "Set1", count: 300 },
-  { dir: "Set2", count: 167 },
+  { path: "S1", count: 300 },
+  { path: "S2", count: 100 },
 ];
 const pad = (n) => String(n).padStart(3, "0");
 
 const frameSrcs = [];
 for (const scene of SCENES) {
   for (let i = 1; i <= scene.count; i++) {
-    frameSrcs.push(`./${scene.dir}/ezgif-frame-${pad(i)}.webp`);
+    // Original asset — no quality/size transforms, so quality is untouched.
+    frameSrcs.push(`${IK_BASE}/${scene.path}/ezgif-frame-${pad(i)}.jpg`);
   }
 }
 const FRAME_COUNT = frameSrcs.length;
