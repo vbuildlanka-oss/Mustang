@@ -519,7 +519,7 @@ h2 {
   position: relative;
   z-index: 2;
   font-size: clamp(3rem, 11vw, 9rem);
-  line-height: 0.9;
+  line-height: 1.15;
 }
 .cta-btn {
   position: relative;
