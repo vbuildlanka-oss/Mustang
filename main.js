@@ -68,18 +68,36 @@ function render(index) {
 }
 
 let loaded = 0;
+// Reveal the experience after a first batch of frames, then keep loading the
+// rest in the background. This avoids a long blank loader on mobile/cellular
+// while keeping every frame at full quality (this only changes load timing).
+const INITIAL_BATCH = Math.min(FRAME_COUNT, 48);
+
 function preload() {
   return new Promise((resolve) => {
+    let initialLoaded = 0;
+    let done = false;
     frameSrcs.forEach((src, idx) => {
       const img = new Image();
       img.decoding = "async";
+      // Prioritize the frames shown first; de-prioritize the long tail so the
+      // browser spends early bandwidth where it matters on slow connections.
+      if ("fetchPriority" in img) {
+        img.fetchPriority = idx < INITIAL_BATCH ? "high" : "low";
+      }
       img.onload = img.onerror = () => {
         loaded++;
-        const pct = Math.round((loaded / FRAME_COUNT) * 100);
-        barFill.style.width = pct + "%";
-        if (barPct) barPct.textContent = pct;
         if (idx === 0) render(0);
-        if (loaded === FRAME_COUNT) resolve();
+        if (idx < INITIAL_BATCH) {
+          initialLoaded++;
+          const pct = Math.round((initialLoaded / INITIAL_BATCH) * 100);
+          barFill.style.width = pct + "%";
+          if (barPct) barPct.textContent = pct;
+          if (initialLoaded >= INITIAL_BATCH && !done) {
+            done = true;
+            resolve(); // reveal now; remaining frames keep streaming in
+          }
+        }
       };
       img.src = src;
       images[idx] = img;
@@ -116,7 +134,7 @@ function initSmoothScroll() {
  * 3. PINNED HERO TIMELINE — frame scrub + cinematic captions
  * ========================================================================= */
 // Scroll distance per frame — shorter on smaller screens so getting through
-// the 467-frame sequence isn't an endless swipe on a phone.
+// the 400-frame sequence isn't an endless swipe on a phone.
 function perFrame() {
   const w = window.innerWidth;
   if (w <= 600) return 5;

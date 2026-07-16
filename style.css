@@ -679,6 +679,20 @@ h2 {
   .footer-credit { font-size: 0.66rem; }
 }
 
+/* Short / landscape phones — scale hero type to viewport HEIGHT so the
+   title, captions and watermark never overflow a short screen. */
+@media (max-height: 540px) and (orientation: landscape) {
+  .title { font-size: clamp(2.6rem, 13vh, 6rem); }
+  .subtitle { margin-top: 10px; font-size: 0.78rem; }
+  .eyebrow { margin-bottom: 8px; }
+  .cap-value { font-size: clamp(3rem, 22vh, 9rem); }
+  .cap-tag { margin-top: 8px; font-size: 0.8rem; }
+  .watermark { font-size: clamp(4rem, 42vh, 12rem); }
+  .scroll-cue { bottom: 12px; }
+  .scroll-line { height: 26px; }
+  .hud { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-line { animation: none; }
   .loader-word { animation: none; }
